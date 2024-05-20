@@ -133,11 +133,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5373330553216305745, guid: e0868e2099f22704cb8f4781f4dffe5f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.75
+      value: 3.84
       objectReference: {fileID: 0}
     - target: {fileID: 5373330553216305745, guid: e0868e2099f22704cb8f4781f4dffe5f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.2
+      value: -1.26
       objectReference: {fileID: 0}
     - target: {fileID: 5373330553216305745, guid: e0868e2099f22704cb8f4781f4dffe5f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -321,8 +321,8 @@ Transform:
   m_GameObject: {fileID: 169982458}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.45, y: 0.58, z: 0}
-  m_LocalScale: {x: 3.9964228, y: 3.9964228, z: 3.9964228}
+  m_LocalPosition: {x: -5.49, y: -0.83, z: 0}
+  m_LocalScale: {x: 2.4986835, y: 2.4986835, z: 2.4986835}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -390,7 +390,7 @@ MonoBehaviour:
   moveSpeed: 5
   jumpForce: 5
   dashDuration: 0.5
-  dashSpeedMultiplier: 1
+  dashSpeedMultiplier: 1.7
 --- !u!1 &211276945
 GameObject:
   m_ObjectHideFlags: 0
@@ -630,11 +630,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4978010614504130156, guid: 55e220e9324021f4aba5a837610ec52e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.25
+      value: 0.42
       objectReference: {fileID: 0}
     - target: {fileID: 4978010614504130156, guid: 55e220e9324021f4aba5a837610ec52e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.87
+      value: -3.36
       objectReference: {fileID: 0}
     - target: {fileID: 4978010614504130156, guid: 55e220e9324021f4aba5a837610ec52e, type: 3}
       propertyPath: m_LocalPosition.z

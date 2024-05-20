@@ -7,7 +7,7 @@ public class player : MonoBehaviour
     public float moveSpeed = 5f; // Tốc độ di chuyển
     public float jumpForce = 5f; // Lực nhảy
     public float dashDuration = 0.5f; // Thời gian lướt (đơn vị: giây)
-    public float dashSpeedMultiplier = 10f; // Hệ số tốc độ Dash
+    public float dashSpeedMultiplier = 2f; // Hệ số tốc độ Dash
     private bool isGrounded; // Kiểm tra nếu nhân vật đang trên mặt đất
     private Rigidbody2D rb; // Tham chiếu đến thành phần Rigidbody2D
     private bool facingRight = true; // Kiểm tra hướng hiện tại của nhân vật
@@ -31,7 +31,7 @@ public class player : MonoBehaviour
 
     void Update()
     {
-        if (!isAttacking)
+        if (!isAttacking && !isDashing)
         {
             // Di chuyển trái và phải
             float move = Input.GetAxis("Horizontal") * moveSpeed;
@@ -56,12 +56,12 @@ public class player : MonoBehaviour
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 animator.SetTrigger("Jump");
             }
+        }
 
-            // Dash
-            if (!isDashing && Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                StartCoroutine(DashCoroutine());
-            }
+        // Dash
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && Mathf.Abs(rb.velocity.x) > 0 && isGrounded)
+        {
+            StartCoroutine(DashCoroutine());
         }
 
         // Tấn công
@@ -74,7 +74,7 @@ public class player : MonoBehaviour
         if (isGrounded)
         {
             animator.SetBool("isGrounded", true);
-            if (rb.velocity.x == 0 && !isAttacking)
+            if (rb.velocity.x == 0 && !isAttacking && !isDashing)
             {
                 animator.SetBool("Idle", true);
                 animator.SetBool("Run", false);
@@ -132,22 +132,21 @@ public class player : MonoBehaviour
         isAttacking = false;
     }
 
-    void Dash()
+    private IEnumerator DashCoroutine()
     {
         isDashing = true;
-        // Thiết lập tốc độ di chuyển của nhân vật
-        float dashSpeed = facingRight ? dashSpeedMultiplier : -dashSpeedMultiplier;
-        rb.velocity = new Vector2(dashSpeed, rb.velocity.y);
-        // Kích hoạt trạng thái lướt trong Animator
-        animator.SetBool("IsDashing", true);
-    }
+        float originalGravityScale = rb.gravityScale;
+        rb.gravityScale = 0; // Vô hiệu hóa trọng lực trong khi lướt
 
-    IEnumerator DashCoroutine()
-    {
-        isDashing = true;
-        animator.SetBool("IsDashing", true); // Kích hoạt trạng thái lướt trong Animator
-        yield return new WaitForSeconds(dashDuration); // Chờ cho đến khi kết thúc thời gian lướt
-        animator.SetBool("IsDashing", false); // Kết thúc trạng thái lướt
+        float dashSpeed = facingRight ? moveSpeed * dashSpeedMultiplier : -moveSpeed * dashSpeedMultiplier;
+        rb.velocity = new Vector2(dashSpeed, 0); // Đặt vận tốc lướt
+
+        animator.SetBool("IsDashing", true);
+
+        yield return new WaitForSeconds(dashDuration); // Chờ trong thời gian lướt
+
+        animator.SetBool("IsDashing", false);
+        rb.gravityScale = originalGravityScale; // Khôi phục trọng lực ban đầu
         isDashing = false;
     }
 }

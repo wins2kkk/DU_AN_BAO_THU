@@ -2304,7 +2304,10 @@ namespace PlayFab
             PlayFabHttp.MakeApiCall("/Client/WriteTitleEvent", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
-
+        public static void RegisterPlayFabUser(RegisterPlayFabUserRequest request, object onError)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
