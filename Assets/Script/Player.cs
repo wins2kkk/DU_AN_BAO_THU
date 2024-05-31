@@ -1,24 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI; // For UI manipulation
 
-public class player : MonoBehaviour
+public class Player : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Tốc độ di chuyển
-    public float jumpForce = 5f; // Lực nhảy
-    public float dashDuration = 0.5f; // Thời gian lướt (đơn vị: giây)
-    public float dashSpeedMultiplier = 2f; // Hệ số tốc độ Dash
-    private bool isGrounded; // Kiểm tra nếu nhân vật đang trên mặt đất
-    private Rigidbody2D rb; // Tham chiếu đến thành phần Rigidbody2D
-    private bool facingRight = true; // Kiểm tra hướng hiện tại của nhân vật
-    private Animator animator; // Tham chiếu đến thành phần Animator
-    private bool isAttacking = false; // Kiểm tra nếu nhân vật đang tấn công
-    private bool isDashing = false; // Kiểm tra nếu nhân vật đang Dash
+    public float moveSpeed = 5f; // Movement speed
+    public float jumpForce = 5f; // Jump force
+    public float dashDuration = 0.5f; // Dash duration (seconds)
+    public float dashSpeedMultiplier = 2f; // Dash speed multiplier
+    public float climbSpeed = 3f; // Climb speed
+    public Text coinText; // Reference to the UI Text element
+    private int coinCount = 0; // Variable to store the number of collected coins
+    private bool isGrounded; // Check if the player is on the ground
+    private bool isClimbing = false; // Check if the player is climbing a ladder
+    private bool nearLadder = false; // Check if the player is near a ladder
+    private Rigidbody2D rb; // Reference to the Rigidbody2D component
+    private bool facingRight = true; // Check the current facing direction of the player
+    private Animator animator; // Reference to the Animator component
+    private bool isAttacking = false; // Check if the player is attacking
+    private bool isDashing = false; // Check if the player is dashing
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>(); // Lấy thành phần Rigidbody2D
-        animator = GetComponent<Animator>(); // Lấy thành phần Animator
+        rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
+        animator = GetComponent<Animator>(); // Get the Animator component
         if (rb == null)
         {
             Debug.LogError("Rigidbody2D component is missing from this game object");
@@ -27,51 +33,82 @@ public class player : MonoBehaviour
         {
             Debug.LogError("Animator component is missing from this game object");
         }
+        if (coinText == null)
+        {
+            Debug.LogError("Coin Text UI component is missing");
+        }
+        UpdateCoinText();
     }
 
     void Update()
     {
-        if (!isAttacking && !isDashing)
+        if (!isClimbing)
         {
-            // Di chuyển trái và phải
-            float move = Input.GetAxis("Horizontal") * moveSpeed;
-            rb.velocity = new Vector2(move, rb.velocity.y);
-
-            // Kiểm tra và lật mặt nhân vật
-            if (move > 0 && !facingRight)
+            if (!isAttacking && !isDashing)
             {
-                Flip();
+                // Move left and right
+                float move = Input.GetAxis("Horizontal") * moveSpeed;
+                rb.velocity = new Vector2(move, rb.velocity.y);
+
+                // Check and flip the player's direction
+                if (move > 0 && !facingRight)
+                {
+                    Flip();
+                }
+                else if (move < 0 && facingRight)
+                {
+                    Flip();
+                }
+
+                // Update Speed parameter for Animator
+                animator.SetFloat("Speed", Mathf.Abs(move));
+
+                // Jump
+                if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) && isGrounded)
+                {
+                    rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                    animator.SetTrigger("Jump");
+                }
             }
-            else if (move < 0 && facingRight)
+
+            // Dash
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && Mathf.Abs(rb.velocity.x) > 0 && isGrounded)
             {
-                Flip();
+                StartCoroutine(DashCoroutine());
             }
 
-            // Cập nhật tham số Speed cho Animator
-            animator.SetFloat("Speed", Mathf.Abs(move));
-
-            // Nhảy
-            if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) && isGrounded)
+            // Attack
+            if (Input.GetKeyDown(KeyCode.Q) && !isAttacking)
             {
-                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                animator.SetTrigger("Jump");
+                StartCoroutine(Attack());
+            }
+
+            // Climb
+            if (Input.GetKeyDown(KeyCode.E) && nearLadder)
+            {
+                isClimbing = true;
+                rb.velocity = Vector2.zero;
+                rb.gravityScale = 0; // Disable gravity while climbing
+                animator.SetBool("IsClimbing", true);
             }
         }
 
-        // Dash
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && Mathf.Abs(rb.velocity.x) > 0 && isGrounded)
+        if (isClimbing)
         {
-            StartCoroutine(DashCoroutine());
+            float climb = Input.GetAxis("Vertical") * climbSpeed;
+            rb.velocity = new Vector2(0, climb);
+
+            // Stop climbing when the player moves away from the ladder or presses left/right
+            if (!nearLadder || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+            {
+                isClimbing = false;
+                rb.gravityScale = 1; // Restore gravity
+                animator.SetBool("IsClimbing", false);
+            }
         }
 
-        // Tấn công
-        if (Input.GetKeyDown(KeyCode.Q) && !isAttacking)
-        {
-            StartCoroutine(Attack());
-        }
-
-        // Cập nhật trạng thái idle và run
-        if (isGrounded)
+        // Update idle and run states
+        if (isGrounded && !isClimbing)
         {
             animator.SetBool("isGrounded", true);
             if (rb.velocity.x == 0 && !isAttacking && !isDashing)
@@ -94,7 +131,7 @@ public class player : MonoBehaviour
 
     void Flip()
     {
-        // Lật mặt nhân vật
+        // Flip the player's direction
         facingRight = !facingRight;
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
@@ -103,32 +140,80 @@ public class player : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // Kiểm tra nếu nhân vật đang chạm đất
+        // Check if the player is on the ground
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-            // Cập nhật tham số cho Animator
+            // Update the Animator parameter
             animator.SetBool("isGrounded", true);
+
+            // Check if the player is in the Jump animation state
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+            {
+                animator.SetBool("Idle", true); // Set to idle animation state
+            }
         }
     }
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        // Khi nhân vật không còn chạm đất
+        // When the player is no longer on the ground
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
-            // Cập nhật tham số cho Animator
+            // Update the Animator parameter
             animator.SetBool("isGrounded", false);
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        // Check if the player collided with a coin
+        if (other.gameObject.CompareTag("Coin"))
+        {
+            AddCoin(1);
+            Destroy(other.gameObject); // Destroy the coin object after collecting
+        }
+
+        // Check if the player is near a ladder
+        if (other.gameObject.CompareTag("Ladder"))
+        {
+            nearLadder = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        // Check if the player is leaving the ladder
+        if (other.gameObject.CompareTag("Ladder"))
+        {
+            nearLadder = false;
+            isClimbing = false;
+            rb.gravityScale = 1; // Restore gravity
+            animator.SetBool("IsClimbing", false);
+        }
+    }
+
+    public void AddCoin(int amount)
+    {
+        coinCount += amount;
+        UpdateCoinText();
+    }
+
+    private void UpdateCoinText()
+    {
+        if (coinText != null)
+        {
+            coinText.text = "Coins: " + coinCount.ToString();
         }
     }
 
     private IEnumerator Attack()
     {
         isAttacking = true;
-        rb.velocity = Vector2.zero; // Dừng chuyển động
+        rb.velocity = Vector2.zero; // Stop movement
         animator.SetTrigger("Attack");
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); // Chờ thời gian của animation Attack
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); // Wait for the attack animation to finish
         isAttacking = false;
     }
 
@@ -136,17 +221,17 @@ public class player : MonoBehaviour
     {
         isDashing = true;
         float originalGravityScale = rb.gravityScale;
-        rb.gravityScale = 0; // Vô hiệu hóa trọng lực trong khi lướt
+        rb.gravityScale = 0; // Disable gravity while dashing
 
         float dashSpeed = facingRight ? moveSpeed * dashSpeedMultiplier : -moveSpeed * dashSpeedMultiplier;
-        rb.velocity = new Vector2(dashSpeed, 0); // Đặt vận tốc lướt
+        rb.velocity = new Vector2(dashSpeed, 0); // Set the dash velocity
 
         animator.SetBool("IsDashing", true);
 
-        yield return new WaitForSeconds(dashDuration); // Chờ trong thời gian lướt
+        yield return new WaitForSeconds(dashDuration); // Wait for the dash duration
 
         animator.SetBool("IsDashing", false);
-        rb.gravityScale = originalGravityScale; // Khôi phục trọng lực ban đầu
+        rb.gravityScale = originalGravityScale; // Restore original gravity
         isDashing = false;
     }
 }
