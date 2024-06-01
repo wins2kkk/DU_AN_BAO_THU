@@ -21,6 +21,9 @@ public class Player : MonoBehaviour
     private bool isAttacking = false; // Check if the player is attacking
     private bool isDashing = false; // Check if the player is dashing
 
+    private Vector3 spawnPoint;
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
@@ -38,6 +41,9 @@ public class Player : MonoBehaviour
             Debug.LogError("Coin Text UI component is missing");
         }
         UpdateCoinText();
+
+        spawnPoint = transform.position;
+
     }
 
     void Update()
@@ -180,6 +186,10 @@ public class Player : MonoBehaviour
         {
             nearLadder = true;
         }
+        if (other.gameObject.CompareTag("RedZone")) 
+            {
+            Respawn();
+            } 
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -233,5 +243,13 @@ public class Player : MonoBehaviour
         animator.SetBool("IsDashing", false);
         rb.gravityScale = originalGravityScale; // Restore original gravity
         isDashing = false;
+    }
+
+    
+
+    private void Respawn()
+    {
+        // Di chuyển nhân vật về điểm hồi sinh
+        transform.position = spawnPoint;
     }
 }
