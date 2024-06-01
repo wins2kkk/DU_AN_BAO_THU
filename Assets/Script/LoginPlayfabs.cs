@@ -99,6 +99,7 @@ public class LoginPlayfabs : MonoBehaviour
         MessageText.text = "Recovery Mail Sent";
     }
 
+
     private void OnRegisterSuccess(RegisterPlayFabUserResult result)
     {
         MessageText.text = "New Account Is Created";
@@ -133,4 +134,11 @@ public class LoginPlayfabs : MonoBehaviour
         TopText.text = "Recovery";
     }
     #endregion
+
+    IEnumerator LoadNextScene()
+    {
+        yield return new WaitForSeconds(2);
+        MessageText.text = "Login Succes";
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
 }
