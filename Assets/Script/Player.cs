@@ -95,7 +95,7 @@ public class Player : MonoBehaviour
                 isClimbing = true;
                 rb.velocity = Vector2.zero;
                 rb.gravityScale = 0; // Disable gravity while climbing
-                animator.SetBool("IsClimbing", true);
+                //animator.SetBool("IsClimbing", true);
             }
         }
 
@@ -109,7 +109,7 @@ public class Player : MonoBehaviour
             {
                 isClimbing = false;
                 rb.gravityScale = 1; // Restore gravity
-                animator.SetBool("IsClimbing", false);
+               // animator.SetBool("IsClimbing", false);
             }
         }
 
@@ -120,18 +120,18 @@ public class Player : MonoBehaviour
             if (rb.velocity.x == 0 && !isAttacking && !isDashing)
             {
                 animator.SetBool("Idle", true);
-                animator.SetBool("Run", false);
+                //animator.SetBool("Run", false);
             }
             else
             {
                 animator.SetBool("Idle", false);
-                animator.SetBool("Run", true);
+                //animator.SetBool("Run", true);
             }
         }
         else
         {
             animator.SetBool("isGrounded", false);
-            animator.SetBool("Run", false);
+            //animator.SetBool("Run", false);
         }
     }
 
@@ -200,7 +200,7 @@ public class Player : MonoBehaviour
             nearLadder = false;
             isClimbing = false;
             rb.gravityScale = 1; // Restore gravity
-            animator.SetBool("IsClimbing", false);
+            //animator.SetBool("IsClimbing", false);
         }
     }
 
