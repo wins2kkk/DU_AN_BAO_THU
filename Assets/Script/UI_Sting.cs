@@ -25,20 +25,13 @@ public class UI_Sting : MonoBehaviour
     // cai dat
     public GameObject panel;
     public GameObject panelrank;
-    public Slider volume;
+  
     
-    public void setvolume()
-    {
-        AudioListener.volume = volume.value;
-    }
-    public void ChangeVolume()
-    {
-        AudioListener.volume = volume.value;
-    }
   
     public void htoption()
     {
         panel.SetActive(true);
+    //      panelrank.SetActive(false);
         pause();
     }
     // an di option
@@ -46,15 +39,21 @@ public class UI_Sting : MonoBehaviour
     {
 
         panel.SetActive(false);
+        
         resume();
     }
     public void htrank()
     {
-        panelrank.SetActive(true );
+        panelrank.SetActive(true);
+        panel.SetActive(false);
+        pause();
+
     }
     public void anrank()
     {
         panelrank.SetActive(false );
+        resume();
+        
     }
 
     public void NewGame()
