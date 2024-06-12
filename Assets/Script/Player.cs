@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // For UI manipulation
 
@@ -11,7 +10,10 @@ public class Player : MonoBehaviour
     public float dashSpeedMultiplier = 2f; // Dash speed multiplier
     public float climbSpeed = 3f; // Climb speed
     public Text coinText; // Reference to the UI Text element
+    public Slider healthSlider; // Reference to the UI Slider for health
+    public GameObject damageTextPrefab; // Prefab for the damage text
     private int coinCount = 0; // Variable to store the number of collected coins
+    private int health = 100; // Player health
     private bool isGrounded; // Check if the player is on the ground
     private bool isClimbing = false; // Check if the player is climbing a ladder
     private bool nearLadder = false; // Check if the player is near a ladder
@@ -20,9 +22,11 @@ public class Player : MonoBehaviour
     private Animator animator; // Reference to the Animator component
     private bool isAttacking = false; // Check if the player is attacking
     private bool isDashing = false; // Check if the player is dashing
+    private bool isKnockback = false; // Check if the player is knocked back
 
+    public GameObject gameOverPanel;
+    private bool gameOver = false;
     private Vector3 spawnPoint;
-
 
     void Start()
     {
@@ -40,15 +44,23 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("Coin Text UI component is missing");
         }
+        if (healthSlider == null)
+        {
+            Debug.LogError("Health Slider UI component is missing");
+        }
+        if (damageTextPrefab == null)
+        {
+            Debug.LogError("Damage Text Prefab is missing");
+        }
+
         UpdateCoinText();
-
+        healthSlider.value = health; // Set initial health value
         spawnPoint = transform.position;
-
     }
 
     void Update()
     {
-        if (!isClimbing)
+        if (!gameOver && !isClimbing && !isKnockback)
         {
             if (!isAttacking && !isDashing)
             {
@@ -95,7 +107,7 @@ public class Player : MonoBehaviour
                 isClimbing = true;
                 rb.velocity = Vector2.zero;
                 rb.gravityScale = 0; // Disable gravity while climbing
-                animator.SetBool("IsClimbing", true);
+                //animator.SetBool("IsClimbing", true);
             }
         }
 
@@ -109,7 +121,7 @@ public class Player : MonoBehaviour
             {
                 isClimbing = false;
                 rb.gravityScale = 1; // Restore gravity
-                animator.SetBool("IsClimbing", false);
+                                     // animator.SetBool("IsClimbing", false);
             }
         }
 
@@ -120,18 +132,18 @@ public class Player : MonoBehaviour
             if (rb.velocity.x == 0 && !isAttacking && !isDashing)
             {
                 animator.SetBool("Idle", true);
-                animator.SetBool("Run", false);
+                //animator.SetBool("Run", false);
             }
             else
             {
                 animator.SetBool("Idle", false);
-                animator.SetBool("Run", true);
+                //animator.SetBool("Run", true);
             }
         }
         else
         {
             animator.SetBool("isGrounded", false);
-            animator.SetBool("Run", false);
+            //animator.SetBool("Run", false);
         }
     }
 
@@ -158,6 +170,13 @@ public class Player : MonoBehaviour
             {
                 animator.SetBool("Idle", true); // Set to idle animation state
             }
+        }
+
+        // Check if the player collided with a trap
+        if (collision.gameObject.CompareTag("Trap"))
+        {
+            StartCoroutine(Knockback(collision));
+            TakeDamage(10);
         }
     }
 
@@ -186,10 +205,10 @@ public class Player : MonoBehaviour
         {
             nearLadder = true;
         }
-        if (other.gameObject.CompareTag("RedZone")) 
-            {
+        if (other.gameObject.CompareTag("RedZone"))
+        {
             Respawn();
-            } 
+        }
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -200,7 +219,7 @@ public class Player : MonoBehaviour
             nearLadder = false;
             isClimbing = false;
             rb.gravityScale = 1; // Restore gravity
-            animator.SetBool("IsClimbing", false);
+            //animator.SetBool("IsClimbing", false);
         }
     }
 
@@ -245,11 +264,59 @@ public class Player : MonoBehaviour
         isDashing = false;
     }
 
-    
+    private IEnumerator Knockback(Collision2D collision)
+    {
+        isKnockback = true;
+        animator.SetTrigger("KnockbackTrigger");
+
+        float knockbackDirection = collision.transform.position.x > transform.position.x ? -1 : 1;
+        rb.velocity = new Vector2(knockbackDirection * moveSpeed, rb.velocity.y);
+
+        yield return new WaitForSeconds(0.5f); // Thời gian bị bật ra sau
+
+        isKnockback = false;
+    }
+
+    private void TakeDamage(int damage)
+    {
+        health -= damage;
+        healthSlider.value = health;
+
+        // Instantiate the damage text at the player's position
+        GameObject damageText = Instantiate(damageTextPrefab, transform.position, Quaternion.identity);
+        damageText.GetComponent<Text>().text = "-" + damage;
+        Destroy(damageText, 1f); // Destroy the damage text after 1 second
+
+        if (health <= 0)
+        {
+            // Activate death animation
+            animator.SetTrigger("Dead");
+
+            // Optionally, disable player controls or perform other game over logic here
+            // For example:
+            // GetComponent<PlayerController>().enabled = false;
+
+            // Show game over panel after the death animation finishes
+            StartCoroutine(ShowGameOverPanel());
+        }
+    }
+
+    private IEnumerator ShowGameOverPanel()
+    {
+        yield return new WaitForSeconds(2.3f); // Thời gian dựa trên chiều dài thực của animation chết
+
+        // Hiển thị game over panel
+        gameOverPanel.SetActive(true);
+        Time.timeScale = 0; // Đóng băng thời gian khi hiển thị game over panel
+    }
 
     private void Respawn()
     {
-        // Di chuyển nhân vật về điểm hồi sinh
-        transform.position = spawnPoint;
+        // Code Respawn giữ nguyên
+
+        gameOver = false; // Đặt lại biến gameOver thành false khi người chơi respawn
+        Time.timeScale = 1; // Khôi phục thời gian khi bắt đầu trò chơi mới
     }
+
 }
+
