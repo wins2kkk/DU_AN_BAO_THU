@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class GoblinController : MonoBehaviour
 {
@@ -11,13 +12,20 @@ public class GoblinController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator anim;
-    private SpriteRenderer spriteRenderer;
-    //private bool movingRight = true;
+    private SpriteRenderer spriteRenderer;//
     private float startX; // Vị trí x ban đầu
     private Transform player; // Tham chiếu tới player
     private bool isChasing = false; // Biến đánh dấu liệu Goblin có đuổi theo player hay không
     private bool isAttacking = false; // Biến đánh dấu liệu Goblin đang tấn công hay không
     private bool isTakingHit = false;
+
+    public int maxHealth = 100;
+    int currentHealth;
+
+    public Animator animator;
+    //public Transform swordTransform;
+
+    private bool attackTriggered = false; // Biến đánh dấu xem tấn công đã được kích hoạt chưa
 
     void Start()
     {
@@ -26,6 +34,8 @@ public class GoblinController : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         startX = transform.position.x; // Lưu vị trí x ban đầu
         player = GameObject.FindGameObjectWithTag("Player").transform; // Tìm và lưu tham chiếu tới player
+
+        currentHealth = maxHealth;
     }
 
     void Update()
@@ -71,10 +81,45 @@ public class GoblinController : MonoBehaviour
         else
         {
             // Nếu player nằm ngoài phạm vi đuổi theo, dừng đuổi theo và ở trạng thái idle
-            Debug.Log("Player out of range");
+            //Debug.Log("Player out of range");
             isChasing = false;
             StopChasingPlayer();
         }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+        Debug.Log("Goblin took damage: " + damage + ", current health: " + currentHealth);
+
+        animator.SetTrigger("Hurt");
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        Debug.Log("Goblin died");
+
+        animator.SetBool("isDead", true);
+        rb.velocity = Vector2.zero; // Dừng mọi chuyển động
+        rb.isKinematic = true; // Biến Rigidbody thành kinematic để ngăn không cho rơi xuống
+        this.enabled = false; // Vô hiệu hóa script này để ngăn không cho thực hiện các hành động tiếp theo
+
+        // Hủy đối tượng sau khi hoàn thành animation chết
+        Destroy(gameObject);
+    }
+
+    private IEnumerator DestroyAfterAnimation()
+    {
+        // Wait for the "Dead" animation to finish
+        Debug.Log("Waiting for dead animation to finish");
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+        Debug.Log("Destroying goblin game object");
+        Destroy(gameObject); // Destroy the game object
     }
 
     void ChasePlayer()
@@ -106,7 +151,7 @@ public class GoblinController : MonoBehaviour
         // Kiểm tra nếu Goblin chạm tới giới hạn bên trái
         else if (transform.position.x <= startX - leftLimit)
         {
-           // movingRight = true;
+            // movingRight = true;
         }
 
         // Chạy animation
@@ -136,6 +181,9 @@ public class GoblinController : MonoBehaviour
 
         // Đặt tốc độ của Goblin về 0
         rb.velocity = Vector2.zero;
+
+        // Đánh dấu rằng tấn công đã được kích hoạt
+        attackTriggered = true;
     }
 
     void StopAttackingPlayer()
@@ -151,6 +199,9 @@ public class GoblinController : MonoBehaviour
 
                 // Khôi phục tốc độ di chuyển sau khi kết thúc animation tấn công
                 rb.velocity = Vector2.zero;
+
+                // Reset biến attackTriggered
+                attackTriggered = false;
             }
         }
     }
@@ -173,13 +224,18 @@ public class GoblinController : MonoBehaviour
         isTakingHit = false;
     }
 
-    // Thêm code xử lý khi Goblin bị đánh
+    // Thêm code xử lý khi Goblin bị đánh hoặc va chạm với Trap
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
             // Thực hiện hành động khi Goblin bị đánh
             TakeHit();
+        }
+        else if (other.CompareTag("Trap") && attackTriggered)
+        {
+            // Thực hiện hành động khi Goblin va chạm với Trap trong lúc đang tấn công
+            AttackPlayer();
         }
     }
 }

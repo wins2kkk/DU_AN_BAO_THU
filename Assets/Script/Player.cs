@@ -23,13 +23,27 @@ public class Player : MonoBehaviour
     private bool isAttacking = false; // Check if the player is attacking
     private bool isDashing = false; // Check if the player is dashing
     private bool isKnockback = false; // Check if the player is knocked back
-
-    public GameObject gameOverPanel;
+    public GameObject gameOverPanel;//
     private bool gameOver = false;
     private Vector3 spawnPoint;
 
+    public Animator animator1;
+    public Transform attackPoint;
+    public LayerMask enemyLayers;
+
+    public float attackRange = 0.5f;
+    public int attackDamege = 40;
+
+    public int maxHealth = 100;
+    private int currentHealth;
+
+
+
+
     void Start()
     {
+        currentHealth = maxHealth;
+
         rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
         animator = GetComponent<Animator>(); // Get the Animator component
         if (rb == null)
@@ -81,12 +95,14 @@ public class Player : MonoBehaviour
                 // Update Speed parameter for Animator
                 animator.SetFloat("Speed", Mathf.Abs(move));
 
+
                 // Jump
                 if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) && isGrounded)
                 {
                     rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                     animator.SetTrigger("Jump");
                 }
+
             }
 
             // Dash
@@ -99,6 +115,7 @@ public class Player : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Q) && !isAttacking)
             {
                 StartCoroutine(Attack());
+
             }
 
             // Climb
@@ -106,8 +123,7 @@ public class Player : MonoBehaviour
             {
                 isClimbing = true;
                 rb.velocity = Vector2.zero;
-                rb.gravityScale = 0; // Disable gravity while climbing
-                //animator.SetBool("IsClimbing", true);
+                rb.gravityScale = 0;
             }
         }
 
@@ -120,8 +136,7 @@ public class Player : MonoBehaviour
             if (!nearLadder || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
             {
                 isClimbing = false;
-                rb.gravityScale = 1; // Restore gravity
-                                     // animator.SetBool("IsClimbing", false);
+                rb.gravityScale = 1;
             }
         }
 
@@ -183,6 +198,7 @@ public class Player : MonoBehaviour
     void OnCollisionExit2D(Collision2D collision)
     {
         // When the player is no longer on the ground
+
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
@@ -198,6 +214,16 @@ public class Player : MonoBehaviour
         {
             AddCoin(1);
             Destroy(other.gameObject); // Destroy the coin object after collecting
+        }
+        if (other.gameObject.CompareTag("Coin2"))
+        {
+            AddCoin(10); 
+            Destroy(other.gameObject); 
+        }
+        if (other.gameObject.CompareTag("Coin3"))
+        {
+            AddCoin(20);
+            Destroy(other.gameObject);
         }
 
         // Check if the player is near a ladder
@@ -218,8 +244,7 @@ public class Player : MonoBehaviour
         {
             nearLadder = false;
             isClimbing = false;
-            rb.gravityScale = 1; // Restore gravity
-            //animator.SetBool("IsClimbing", false);
+            rb.gravityScale = 1;
         }
     }
 
@@ -244,7 +269,39 @@ public class Player : MonoBehaviour
         animator.SetTrigger("Attack");
         yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); // Wait for the attack animation to finish
         isAttacking = false;
+
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            // Thử lấy component GoblinController từ enemy
+            GoblinController goblinController = enemy.GetComponent<GoblinController>();
+            if (goblinController != null)
+            {
+                goblinController.TakeDamage(attackDamege);
+            }
+
+            // Thử lấy component Mushroom từ enemy
+            Mushroom mushroom = enemy.GetComponent<Mushroom>();
+            if (mushroom != null)
+            {
+                mushroom.TakeDamage(attackDamege);
+            }
+        }
+
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null)
+            return;
+
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+
+
+
+    }
+
 
     private IEnumerator DashCoroutine()
     {
@@ -279,8 +336,14 @@ public class Player : MonoBehaviour
 
     private void TakeDamage(int damage)
     {
-        health -= damage;
-        healthSlider.value = health;
+        health -= damage; // Giảm máu
+        healthSlider.value = health; // Cập nhật thanh máu trên UI
+        currentHealth -= damage; // Cập nhật máu hiện tại
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
 
         // Instantiate the damage text at the player's position
         GameObject damageText = Instantiate(damageTextPrefab, transform.position, Quaternion.identity);
@@ -289,7 +352,7 @@ public class Player : MonoBehaviour
 
         if (health <= 0)
         {
-            // Activate death animation
+            //
             animator.SetTrigger("Dead");
 
             // Optionally, disable player controls or perform other game over logic here
@@ -299,6 +362,11 @@ public class Player : MonoBehaviour
             // Show game over panel after the death animation finishes
             StartCoroutine(ShowGameOverPanel());
         }
+    }
+    void Die()
+    {
+        Debug.Log("Player died");
+
     }
 
     private IEnumerator ShowGameOverPanel()
@@ -316,7 +384,6 @@ public class Player : MonoBehaviour
 
         gameOver = false; // Đặt lại biến gameOver thành false khi người chơi respawn
         Time.timeScale = 1; // Khôi phục thời gian khi bắt đầu trò chơi mới
+        //
     }
-
-}
-
+}//
