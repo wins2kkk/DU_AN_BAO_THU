@@ -38,6 +38,7 @@ namespace Cainos.PixelArtPlatformer_VillageProps
         public void Open()
         {
             IsOpened = true;
+            soundManager.PlaySFX(soundManager.ruong);
             GenerateItemOrMonster();
         }
 
@@ -64,6 +65,18 @@ namespace Cainos.PixelArtPlatformer_VillageProps
             {
                 Open();
             }
+        }
+
+        private SoundManager soundManager;
+
+        private void Awake()
+        {
+            soundManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<SoundManager>();
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            // Logic này có thể không cần thiết nữa vì âm thanh sẽ được phát khi mở rương
         }
 
         private void GenerateItemOrMonster()

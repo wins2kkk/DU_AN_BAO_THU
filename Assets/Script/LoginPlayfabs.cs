@@ -28,6 +28,15 @@ public class LoginPlayfabs : MonoBehaviour
     [Header("Recovery")]
     [SerializeField] TMP_InputField EmailRecoveryInput;
     [SerializeField] GameObject RecoveryPage;
+
+    [SerializeField]
+    private GameObject WelcomeObject;
+
+    [SerializeField]
+    private Text WelcomeText;
+
+    [SerializeField]
+    private Player gameManager;
     // Start is called before the first frame update
     void Start()
     {
@@ -68,14 +77,35 @@ public class LoginPlayfabs : MonoBehaviour
         {
             Email = EmailLoginInput.text,
             Password = PasswordLoginInput.text,
+
+
+            InfoRequestParameters = new GetPlayerCombinedInfoRequestParams
+            {
+                GetPlayerProfile = true
+            }
         };
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSucces, OnError);
     }
 
     private void OnLoginSucces(LoginResult result)
     {
-        MessageText.text = "Loggin in";
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        string name = null;
+        if (result.InfoResultPayload != null)
+        {
+            name = result.InfoResultPayload.PlayerProfile.DisplayName;
+        }
+
+
+        WelcomeObject.SetActive(true);
+
+        WelcomeText.text = "Xin chào " + name;
+
+        if (gameManager != null)
+        {
+            gameManager.playerName = name;
+        }
+
+        StartCoroutine(LoadNextScene());
     }
 
     public void RecoveryUser()

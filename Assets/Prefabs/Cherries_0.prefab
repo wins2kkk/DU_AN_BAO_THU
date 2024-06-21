@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5083813402599773371}
   - component: {fileID: 5795653952813648886}
   - component: {fileID: 1621417327703429535}
+  - component: {fileID: 834834510164515949}
   m_Layer: 0
   m_Name: Cherries_0
   m_TagString: Coin
@@ -142,3 +143,15 @@ CircleCollider2D:
   m_Offset: {x: 0.00000021722515, y: -0.00000011585096}
   serializedVersion: 2
   m_Radius: 0.07718726
+--- !u!114 &834834510164515949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6194553445939275800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23b41cf0ab317ea4896af45746c32a54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

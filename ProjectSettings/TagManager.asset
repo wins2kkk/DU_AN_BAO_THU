@@ -9,6 +9,9 @@ TagManager:
   - Ladder
   - RedZone
   - Trap
+  - Coin3
+  - Coin2
+  - Audio
   layers:
   - Default
   - TransparentFX

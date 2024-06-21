@@ -4,6 +4,9 @@ using UnityEngine.UI; // For UI manipulation
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] public string playerName;
+
+
     public float moveSpeed = 5f; // Movement speed
     public float jumpForce = 5f; // Jump force
     public float dashDuration = 0.5f; // Dash duration (seconds)
@@ -177,6 +180,8 @@ public class Player : MonoBehaviour
         {
             StartCoroutine(Knockback(collision));
             TakeDamage(10);
+            soundManager.PlaySFX(soundManager.attack);
+
         }
     }
 
@@ -190,6 +195,7 @@ public class Player : MonoBehaviour
             animator.SetBool("isGrounded", false);
         }
     }
+    private SoundManager audioManager;
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -197,6 +203,7 @@ public class Player : MonoBehaviour
         if (other.gameObject.CompareTag("Coin"))
         {
             AddCoin(1);
+            //audioManager.PlaySFX(audioManager.coin);
             Destroy(other.gameObject); // Destroy the coin object after collecting
         }
 
@@ -291,6 +298,7 @@ public class Player : MonoBehaviour
         {
             // Activate death animation
             animator.SetTrigger("Dead");
+            soundManager.PlaySFX(soundManager.over);
 
             // Optionally, disable player controls or perform other game over logic here
             // For example:
@@ -300,14 +308,23 @@ public class Player : MonoBehaviour
             StartCoroutine(ShowGameOverPanel());
         }
     }
-
+    
+    public static bool GameIsPaused = false;
+    private SoundManager soundManager;
+    private void Awake()
+    {
+        soundManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<SoundManager>();
+    }
     private IEnumerator ShowGameOverPanel()
     {
-        yield return new WaitForSeconds(2.3f); // Thời gian dựa trên chiều dài thực của animation chết
+        yield return new WaitForSeconds(0f); // Thời gian dựa trên chiều dài thực của animation chết
+        
 
         // Hiển thị game over panel
         gameOverPanel.SetActive(true);
-        Time.timeScale = 0; // Đóng băng thời gian khi hiển thị game over panel
+       // Đóng băng thời gian khi hiển thị game over panel
+        Time.timeScale = 0f; // Freeze game time
+        GameIsPaused = true;
     }
 
     private void Respawn()
@@ -319,4 +336,3 @@ public class Player : MonoBehaviour
     }
 
 }
-
