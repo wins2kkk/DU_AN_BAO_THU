@@ -13,8 +13,8 @@ EditorBuildSettings:
     guid: bb5319ebaa78ab341b61231cf975a18f
   - enabled: 1
     path: Assets/Scenes/TileMap1.unity
-    guid: 7def4c83d710c794ca6aa5e7afbffed8
+    guid: e65a02c3eabfc4b448c9fe6a9df888bd
   - enabled: 1
-    path: Assets/Scenes/test_bot.unity
-    guid: 2c864dfb227442c4cb1f2e3347e04401
+    path: Assets/Scenes/Maps_level2.unity
+    guid: 8596fc336388d7c4b9387f0da9b13381
   m_configObjects: {}
