@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/BatDau.unity
     guid: bb5319ebaa78ab341b61231cf975a18f
   - enabled: 1
-    path: Assets/Scenes/TileMap1.unity
+    path: Assets/Scenes/maps_level1.unity
     guid: 7def4c83d710c794ca6aa5e7afbffed8
   - enabled: 1
     path: Assets/Scenes/Game.unity
