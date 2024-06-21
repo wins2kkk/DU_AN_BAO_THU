@@ -30,8 +30,8 @@ Transform:
   m_GameObject: {fileID: 6387789094695349603}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.82, y: -0.25, z: 0}
-  m_LocalScale: {x: 3.2, y: 3.2, z: 2.4986835}
+  m_LocalPosition: {x: -5.49, y: -0.83, z: 0}
+  m_LocalScale: {x: 2.4986835, y: 2.4986835, z: 2.4986835}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 6
   m_Sprite: {fileID: 4723107735738678597, guid: 174209194dbf2fb44aef1ea1ba76a2f1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -140,12 +140,12 @@ PolygonCollider2D:
       - {x: -0.12, y: 0.19999999}
       - {x: -0.17999999, y: 0.11}
       - {x: -0.17999999, y: -0.01}
-      - {x: -0.15100059, y: -0.11814495}
-      - {x: -0.12707075, y: -0.13135894}
-      - {x: -0.06864105, y: -0.1320017}
+      - {x: -0.16, y: -0.14}
+      - {x: -0.12, y: -0.14999999}
+      - {x: -0.049999997, y: -0.14999999}
       - {x: -0.049999997, y: -0.13}
-      - {x: -0.011643577, y: -0.13007335}
-      - {x: 0.12493087, y: -0.1313589}
+      - {x: -0.02, y: -0.14999999}
+      - {x: 0.14999999, y: -0.14999999}
   m_UseDelaunayMesh: 0
 --- !u!95 &1740368476879275124
 Animator:
@@ -213,6 +213,3 @@ MonoBehaviour:
   dashSpeedMultiplier: 1.7
   climbSpeed: 3
   coinText: {fileID: 0}
-  healthSlider: {fileID: 0}
-  damageTextPrefab: {fileID: 0}
-  gameOverPanel: {fileID: 0}

@@ -38,6 +38,7 @@ namespace Cainos.PixelArtPlatformer_VillageProps
         public void Open()
         {
             IsOpened = true;
+            soundManager.PlaySFX(soundManager.ruong);
             GenerateItemOrMonster();
         }
 
@@ -66,23 +67,32 @@ namespace Cainos.PixelArtPlatformer_VillageProps
             }
         }
 
+        private SoundManager soundManager;
+
+        private void Awake()
+        {
+            soundManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<SoundManager>();
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            // Logic này có thể không cần thiết nữa vì âm thanh sẽ được phát khi mở rương
+        }
+
         private void GenerateItemOrMonster()
         {
             bool generateMonster = Random.value > 0.5f; // 50% cơ hội để tạo ra quái vật
-
-            // Tọa độ sinh ra vật phẩm hoặc quái vật cao hơn một chút so với rương
-            Vector3 spawnPosition = transform.position + Vector3.up * 0.6f;
 
             if (generateMonster)
             {
                 // Tạo ra quái vật
                 if (Random.value > 0.5f) // Chọn một trong hai loại quái vật
                 {
-                    Instantiate(monsterPrefab, spawnPosition, Quaternion.identity);
+                    Instantiate(monsterPrefab, transform.position, Quaternion.identity);
                 }
                 else
                 {
-                    Instantiate(monsterPrefab1, spawnPosition, Quaternion.identity);
+                    Instantiate(monsterPrefab1, transform.position, Quaternion.identity);
                 }
             }
             else
@@ -90,15 +100,13 @@ namespace Cainos.PixelArtPlatformer_VillageProps
                 // Tạo ra vật phẩm
                 if (Random.value > 0.5f) // Chọn một trong hai loại vật phẩm
                 {
-                    Instantiate(itemPrefab, spawnPosition, Quaternion.identity);
+                    Instantiate(itemPrefab, transform.position, Quaternion.identity);
                 }
                 else
                 {
-                    Instantiate(itemPrefab1, spawnPosition, Quaternion.identity);
+                    Instantiate(itemPrefab1, transform.position, Quaternion.identity);
                 }
             }
         }
-
     }
 }
-

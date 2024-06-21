@@ -6,17 +6,20 @@ using UnityEngine.UI;
 
 public class UI_Sting : MonoBehaviour
 {
+    public static bool GameIsPaused = false;
     public void newgame()
     {
         SceneManager.LoadScene("Game");// load scene: truyền vào tên màn
     }
     public void pause()
     {
-        Time.timeScale = 0;
+        Time.timeScale = 0f; // Freeze game time
+        GameIsPaused = true;
     }
     public void resume()
     {
-        Time.timeScale = 1.0f;
+        Time.timeScale = 1f; // Resume game time
+        GameIsPaused = false;
     }
     public void exitGame()
     {
@@ -25,8 +28,6 @@ public class UI_Sting : MonoBehaviour
     // cai dat
     public GameObject panel;
     public GameObject panelrank;
-  
-    
   
     public void htoption()
     {
@@ -37,9 +38,7 @@ public class UI_Sting : MonoBehaviour
     // an di option
     public void anoption()
     {
-
-        panel.SetActive(false);
-        
+        panel.SetActive(false);    
         resume();
     }
     public void htrank()
@@ -56,9 +55,33 @@ public class UI_Sting : MonoBehaviour
         
     }
 
+    public GameObject setingpanel;
+    public GameObject loginpanel;
+
+    public void htseting()
+    {
+        setingpanel.SetActive(true);
+        loginpanel.SetActive(false);
+    }
+    public void anseting()
+    {
+        setingpanel.SetActive(false);
+    }
+    public void htLg()
+    {
+        loginpanel.SetActive(true);
+        setingpanel.SetActive(false);
+    }
+    public void anLg()
+    {
+        loginpanel.SetActive(false);
+    }
+
     public void NewGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        Time.timeScale = 1f; // Resume game time
+        GameIsPaused = false;
     }
     public void LoadGame()
     {
@@ -70,16 +93,23 @@ public class UI_Sting : MonoBehaviour
     }
     public void Restart()
     {
-        panel.SetActive(false);
-        SceneManager.LoadScene(2);
-        resume();
+        
+        Time.timeScale = 1f; // Ensure time scale is reset before reloading the scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Reload the current scene
+        GameIsPaused = false;
     }
-
+    private SoundManager soundManager;
+    private void Awake()
+    {
+        soundManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<SoundManager>();
+    }
 
     public string manChoi;
     public void man()
     {
-        SceneManager.LoadScene("Maps_level2");
+        SceneManager.LoadScene(manChoi);
+        //soundManager.PlaySFX(soundManager.next);
+
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {

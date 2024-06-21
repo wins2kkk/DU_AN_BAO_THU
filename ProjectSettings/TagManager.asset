@@ -9,19 +9,20 @@ TagManager:
   - Ladder
   - RedZone
   - Trap
-  - Coin2
   - Coin3
+  - Coin2
+  - Audio
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Enemies
+  - 
   - Water
   - UI
-  - Ground
-  - Player
-  - Test
-  - Test2
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
