@@ -191,24 +191,32 @@ public class Player : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         // Check if the player collided with a coin
-        if (other.gameObject.CompareTag("Coin"))
+        if (collision.tag == "Coin")
         {
             AddCoin(1);
-            Destroy(other.gameObject); // Destroy the coin object after collecting
+            Destroy(collision.gameObject); // Destroy the coin object after collecting
         }
 
         // Check if the player is near a ladder
-        if (other.gameObject.CompareTag("Ladder"))
+        if (collision.tag == "Ladder")
         {
             nearLadder = true;
         }
-        if (other.gameObject.CompareTag("RedZone"))
+        if (collision.tag == "RedZone")
         {
-            Respawn();
+            Debug.Log("cc");
+            ShowGameOverPanel();
+            
         }
+        //if (other.gameObject.CompareTag("hp"))
+        //{
+        //    health += 10;
+        //    Debug.Log("hp + 10");
+        //}
+        
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -316,6 +324,7 @@ public class Player : MonoBehaviour
 
         gameOver = false; // Đặt lại biến gameOver thành false khi người chơi respawn
         Time.timeScale = 1; // Khôi phục thời gian khi bắt đầu trò chơi mới
+        
     }
 
 }
