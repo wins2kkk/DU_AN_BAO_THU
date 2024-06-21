@@ -79,7 +79,7 @@ public class UI_Sting : MonoBehaviour
     public string manChoi;
     public void man()
     {
-        SceneManager.LoadScene("Maps_level2");
+        SceneManager.LoadScene(manChoi);
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
