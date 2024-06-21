@@ -1,0 +1,66 @@
+diff a/Assets/Animation/player .controller b/Assets/Animation/player .controller	(rejected hunks)
+@@ -244,55 +244,55 @@
+     m_DefaultFloat: 0
+     m_DefaultInt: 0
+     m_DefaultBool: 1
+-    m_Controller: {fileID: 0}
++    m_Controller: {fileID: 9100000}
+   - m_Name: Attack
+     m_Type: 9
+     m_DefaultFloat: 0
+     m_DefaultInt: 0
+     m_DefaultBool: 0
+-    m_Controller: {fileID: 0}
++    m_Controller: {fileID: 9100000}
+   - m_Name: isGrounded
+     m_Type: 4
+     m_DefaultFloat: 0
+     m_DefaultInt: 0
+     m_DefaultBool: 0
+-    m_Controller: {fileID: 0}
++    m_Controller: {fileID: 9100000}
+   - m_Name: Idle
+     m_Type: 4
+     m_DefaultFloat: 0
+     m_DefaultInt: 0
+     m_DefaultBool: 0
+-    m_Controller: {fileID: 0}
++    m_Controller: {fileID: 9100000}
+   - m_Name: Speed
+     m_Type: 1
+     m_DefaultFloat: 0
+     m_DefaultInt: 0
+     m_DefaultBool: 0
+-    m_Controller: {fileID: 0}
++    m_Controller: {fileID: 9100000}
+   - m_Name: run
+     m_Type: 4
+     m_DefaultFloat: 0
+     m_DefaultInt: 0
+     m_DefaultBool: 1
+-    m_Controller: {fileID: 0}
++    m_Controller: {fileID: 9100000}
+   - m_Name: IsDashing
+     m_Type: 4
+     m_DefaultFloat: 0
+     m_DefaultInt: 0
+     m_DefaultBool: 0
+-    m_Controller: {fileID: 0}
++    m_Controller: {fileID: 9100000}
+   - m_Name: KnockbackTrigger
+     m_Type: 9
+     m_DefaultFloat: 0
+     m_DefaultInt: 0
+     m_DefaultBool: 0
+-    m_Controller: {fileID: 0}
++    m_Controller: {fileID: 9100000}
+   - m_Name: Dead
+     m_Type: 9
+     m_DefaultFloat: 0
+     m_DefaultInt: 0
+     m_DefaultBool: 0
+-    m_Controller: {fileID: 0}
++    m_Controller: {fileID: 9100000}
+   m_AnimatorLayers:
+   - serializedVersion: 5
+     m_Name: Base Layer

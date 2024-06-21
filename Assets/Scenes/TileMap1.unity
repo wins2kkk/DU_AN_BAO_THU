@@ -4436,7 +4436,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6928671463770042856, guid: 9bedcea33aafd8c4a8fb01c3c4e1faf3, type: 3}
       propertyPath: shootInterval
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
